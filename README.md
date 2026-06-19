@@ -6,6 +6,7 @@ Full-stack MVP for a South African spaza shop stock and sales book.
 
 - Owner login and shop registration
 - Trial/payment status on shop accounts
+- Master admin account for shop/payment/activity overview
 - JWT access auth plus httpOnly refresh-session cookie
 - SQLite database using Node 24 built-in `node:sqlite`
 - Dashboard metrics: daily revenue, low stock, expiry risk, compliance score, inventory value
@@ -43,6 +44,15 @@ Demo login:
 Email: owner@spaza.local
 Password: spaza12345
 ```
+
+Local admin login:
+
+```text
+Email: admin@kasistock.local
+Password: admin12345
+```
+
+Production admin is created from `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 
 API:
 

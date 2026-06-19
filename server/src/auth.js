@@ -38,7 +38,7 @@ export function requireAuth(req, _res, next) {
   if (!token) return next(new UnauthorizedError());
   try {
     const payload = jwt.verify(token, config.jwtSecret);
-    const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(payload.sub);
+    const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, role, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(payload.sub);
     if (!user) throw new UnauthorizedError();
     req.user = user;
     next();
@@ -52,7 +52,7 @@ export function verifyRefreshToken(token) {
   const payload = jwt.verify(token, config.refreshSecret);
   const session = db.prepare("SELECT * FROM refresh_sessions WHERE token_id = ? AND user_id = ?").get(payload.jti, payload.sub);
   if (!session || new Date(session.expires_at) < new Date()) throw new UnauthorizedError("Session expired");
-  const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(payload.sub);
+  const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, role, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(payload.sub);
   if (!user) throw new UnauthorizedError("Session expired");
   return { user, tokenId: payload.jti };
 }

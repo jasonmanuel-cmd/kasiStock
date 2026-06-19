@@ -25,6 +25,8 @@ const tabs = [
   ["orders", "Orders", MessageCircle]
 ];
 
+const adminTab = ["admin", "Admin", Store];
+
 function App() {
   const [auth, setAuth] = useState({ loading: true, user: null });
   const [token, setToken] = useState("");
@@ -174,6 +176,7 @@ function Shell({ user, onLogout }) {
     if (error) return <ErrorState error={error} onRetry={refresh} />;
     if (!data) return null;
     const props = { data, refresh };
+    if (active === "admin") return <Admin />;
     if (active === "dashboard") return <Dashboard {...props} />;
     if (active === "products") return <Products {...props} />;
     if (active === "sales") return <Sales {...props} />;
@@ -191,7 +194,7 @@ function Shell({ user, onLogout }) {
           <small>{user.trialEndsAt ? `Trial ends ${user.trialEndsAt}` : "R99/month main plan"}</small>
         </div>
         <nav>
-          {tabs.map(([id, label, Icon]) => <button key={id} className={active === id ? "active" : ""} onClick={() => setActive(id)}><Icon size={18} />{label}</button>)}
+          {[...tabs, ...(user.role === "admin" ? [adminTab] : [])].map(([id, label, Icon]) => <button key={id} className={active === id ? "active" : ""} onClick={() => setActive(id)}><Icon size={18} />{label}</button>)}
         </nav>
         <button className="logout" onClick={onLogout}><LogOut size={18} />Sign out</button>
       </aside>
@@ -203,6 +206,60 @@ function Shell({ user, onLogout }) {
         {content}
       </main>
     </div>
+  );
+}
+
+function Admin() {
+  const [shops, setShops] = useState([]);
+  const [error, setError] = useState("");
+
+  async function load() {
+    try {
+      setError("");
+      setShops((await api("/api/admin/shops")).data);
+    } catch (err) {
+      setError(messageFor(err));
+    }
+  }
+
+  async function updateShop(shop, patch) {
+    await api(`/api/admin/shops/${shop.id}`, {
+      method: "PATCH",
+      body: { planName: patch.planName || shop.planName, paymentStatus: patch.paymentStatus || shop.paymentStatus }
+    });
+    load();
+  }
+
+  useEffect(() => { load(); }, []);
+
+  return (
+    <Panel title="Master Account" eyebrow="Shops and payments">
+      {error && <p className="form-error">{error}</p>}
+      <List empty="No shops yet">
+        {shops.map((shop) => (
+          <div className="admin-row" key={shop.id}>
+            <div>
+              <strong>{shop.shopName}</strong>
+              <small>{shop.ownerName} · {shop.email} · {shop.phone || "no phone"}</small>
+              <small>{shop.productCount} products · {shop.saleCount} sales · {money(shop.revenueTotal)} total · last sale {shop.lastSaleAt || "none"}</small>
+            </div>
+            <select value={shop.planName} onChange={(event) => updateShop(shop, { planName: event.target.value })}>
+              <option value="trial">trial</option>
+              <option value="lite">lite</option>
+              <option value="pro">pro</option>
+              <option value="plus">plus</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+            <select value={shop.paymentStatus} onChange={(event) => updateShop(shop, { paymentStatus: event.target.value })}>
+              <option value="trial">trial</option>
+              <option value="paid">paid</option>
+              <option value="overdue">overdue</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+        ))}
+      </List>
+    </Panel>
   );
 }
 

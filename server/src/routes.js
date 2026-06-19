@@ -94,7 +94,7 @@ export function registerRoutes(app) {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       `).run(id, body.shopName, body.ownerName, body.email.toLowerCase(), passwordHash, body.phone || null, body.language, trialEndDate());
       seedCompliance(id);
-      const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(id);
+      const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, role, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(id);
       const accessToken = createAccessToken(user);
       setRefreshCookie(res, createRefreshToken(user.id));
       res.status(201).json({ user: mapUser(user), accessToken });
@@ -109,7 +109,7 @@ export function registerRoutes(app) {
       const body = validate(z.object({ email: z.string().email(), password: z.string().min(1) }), req.body);
       const userWithPassword = db.prepare("SELECT * FROM users WHERE email = ?").get(body.email.toLowerCase());
       if (!userWithPassword || !bcrypt.compareSync(body.password, userWithPassword.password_hash)) throw new UnauthorizedError("Invalid email or password");
-      const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(userWithPassword.id);
+      const user = db.prepare("SELECT id, shop_name, owner_name, email, phone, language, role, plan_name, payment_status, trial_ends_at FROM users WHERE id = ?").get(userWithPassword.id);
       const accessToken = createAccessToken(user);
       setRefreshCookie(res, createRefreshToken(user.id));
       res.json({ user: mapUser(user), accessToken });
@@ -301,6 +301,56 @@ export function registerRoutes(app) {
       next(error);
     }
   });
+
+  app.get("/api/admin/shops", requireAuth, requireAdmin, (_req, res) => {
+    const rows = db.prepare(`
+      SELECT
+        u.id, u.shop_name, u.owner_name, u.email, u.phone, u.plan_name, u.payment_status, u.trial_ends_at, u.created_at,
+        COUNT(DISTINCT p.id) AS product_count,
+        COUNT(DISTINCT s.id) AS sale_count,
+        COALESCE(SUM(s.total), 0) AS revenue_total,
+        MAX(s.created_at) AS last_sale_at
+      FROM users u
+      LEFT JOIN products p ON p.user_id = u.id
+      LEFT JOIN sales s ON s.user_id = u.id
+      WHERE u.role != 'admin'
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
+    `).all();
+    res.json({ data: rows.map(mapAdminShop) });
+  });
+
+  app.get("/api/admin/shops/:id", requireAuth, requireAdmin, (req, res, next) => {
+    try {
+      const shop = db.prepare("SELECT * FROM users WHERE id = ? AND role != 'admin'").get(req.params.id);
+      if (!shop) throw new NotFoundError("Shop");
+      res.json({
+        shop: mapAdminShop({ ...shop, product_count: 0, sale_count: 0, revenue_total: 0, last_sale_at: null }),
+        products: db.prepare("SELECT * FROM products WHERE user_id = ? ORDER BY name").all(req.params.id).map(mapProduct),
+        sales: db.prepare("SELECT * FROM sales WHERE user_id = ? ORDER BY created_at DESC LIMIT 100").all(req.params.id).map(mapSale),
+        suppliers: db.prepare("SELECT * FROM suppliers WHERE user_id = ? ORDER BY supplier_name").all(req.params.id).map(mapSupplier),
+        orders: db.prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 100").all(req.params.id).map(mapOrder)
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.patch("/api/admin/shops/:id", requireAuth, requireAdmin, (req, res, next) => {
+    try {
+      const body = validate(z.object({
+        planName: z.enum(["trial", "lite", "pro", "plus", "cancelled"]),
+        paymentStatus: z.enum(["trial", "paid", "overdue", "cancelled"])
+      }), req.body);
+      db.prepare("UPDATE users SET plan_name = ?, payment_status = ? WHERE id = ? AND role != 'admin'")
+        .run(body.planName, body.paymentStatus, req.params.id);
+      const row = db.prepare("SELECT * FROM users WHERE id = ?").get(req.params.id);
+      if (!row) throw new NotFoundError("Shop");
+      res.json({ data: mapUser(row) });
+    } catch (error) {
+      next(error);
+    }
+  });
 }
 
 function mapUser(row) {
@@ -311,9 +361,33 @@ function mapUser(row) {
     email: row.email,
     phone: row.phone,
     language: row.language,
+    role: row.role,
     planName: row.plan_name,
     paymentStatus: row.payment_status,
     trialEndsAt: row.trial_ends_at
+  };
+}
+
+function requireAdmin(req, _res, next) {
+  if (req.user.role === "admin") return next();
+  next(new UnauthorizedError("Admin access required"));
+}
+
+function mapAdminShop(row) {
+  return {
+    id: row.id,
+    shopName: row.shop_name,
+    ownerName: row.owner_name,
+    email: row.email,
+    phone: row.phone,
+    planName: row.plan_name,
+    paymentStatus: row.payment_status,
+    trialEndsAt: row.trial_ends_at,
+    createdAt: row.created_at,
+    productCount: row.product_count,
+    saleCount: row.sale_count,
+    revenueTotal: row.revenue_total,
+    lastSaleAt: row.last_sale_at
   };
 }
 

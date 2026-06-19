@@ -471,6 +471,27 @@ button:focus-visible {
   align-items: center;
 }
 
+.admin-row {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px 130px;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-row strong,
+.admin-row small {
+  display: block;
+}
+
+.admin-row small {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
 .row.alert {
   grid-template-columns: auto minmax(0, 1fr) auto;
 }
@@ -629,6 +650,10 @@ button:focus-visible {
   }
 
   .check-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-row {
     grid-template-columns: 1fr;
   }
 }

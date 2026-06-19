@@ -21,6 +21,7 @@ export function migrate() {
       password_hash TEXT NOT NULL,
       phone TEXT,
       language TEXT NOT NULL DEFAULT 'en',
+      role TEXT NOT NULL DEFAULT 'owner',
       plan_name TEXT NOT NULL DEFAULT 'trial',
       payment_status TEXT NOT NULL DEFAULT 'trial',
       trial_ends_at TEXT,
@@ -101,10 +102,12 @@ export function migrate() {
   ensureColumn("users", "payment_status", "TEXT NOT NULL DEFAULT 'trial'");
   ensureColumn("users", "trial_ends_at", "TEXT");
   ensureColumn("users", "terms_accepted_at", "TEXT");
+  ensureColumn("users", "role", "TEXT NOT NULL DEFAULT 'owner'");
   db.prepare("UPDATE users SET trial_ends_at = ? WHERE trial_ends_at IS NULL").run(daysFromNow(30));
 }
 
 export function seed() {
+  seedAdmin();
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get("owner@spaza.local");
   if (existing) return existing.id;
 
@@ -179,4 +182,20 @@ export function daysFromNow(days) {
 function ensureColumn(table, column, definition) {
   const exists = db.prepare(`PRAGMA table_info(${table})`).all().some((row) => row.name === column);
   if (!exists) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}
+
+function seedAdmin() {
+  const email = process.env.ADMIN_EMAIL || (process.env.NODE_ENV === "production" ? "" : "admin@kasistock.local");
+  const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === "production" ? "" : "admin12345");
+  if (!email || !password) return;
+  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email.toLowerCase());
+  const hash = bcrypt.hashSync(password, 12);
+  if (existing) {
+    db.prepare("UPDATE users SET password_hash = ?, role = 'admin', plan_name = 'admin', payment_status = 'paid' WHERE id = ?").run(hash, existing.id);
+    return;
+  }
+  db.prepare(`
+    INSERT INTO users (id, shop_name, owner_name, email, password_hash, phone, language, role, plan_name, payment_status, terms_accepted_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'admin', 'admin', 'paid', CURRENT_TIMESTAMP)
+  `).run(nanoid(), "KasiStock Admin", "KasiStock Admin", email.toLowerCase(), hash, "", "en");
 }
