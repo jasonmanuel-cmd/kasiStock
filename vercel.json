@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build -w client",
+  "outputDirectory": "client/dist",
+  "build": {
+    "env": {
+      "VITE_API_BASE_URL": "https://spaza-osserver-production.up.railway.app"
+    }
+  }
+}

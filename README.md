@@ -50,6 +50,13 @@ API:
 http://127.0.0.1:4100
 ```
 
+Live Railway:
+
+```text
+Server/API: https://spaza-osserver-production.up.railway.app
+Client:     https://spaza-osclient-production.up.railway.app
+```
+
 ## Production-Style Run
 
 This builds the React app and serves it from the Express server:

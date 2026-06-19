@@ -20,7 +20,7 @@ Frontend:
 For Vercel frontend, set:
 
 ```text
-VITE_API_BASE_URL=https://YOUR-RAILWAY-DOMAIN
+VITE_API_BASE_URL=https://spaza-osserver-production.up.railway.app
 ```
 
 No separate frontend env is needed if the Express server serves `client/dist`.
@@ -50,6 +50,15 @@ Docker CLI is installed, but Docker Desktop must be running before `docker build
 Railway note:
 
 Railway CLI is installed, but this machine needs `railway login` before deploy.
+
+Current Railway URLs:
+
+```text
+Server/API: https://spaza-osserver-production.up.railway.app
+Client:     https://spaza-osclient-production.up.railway.app
+```
+
+Both currently return `200`; server `/api/auth/login` works with the demo account.
 
 ## Smoke Test
 
