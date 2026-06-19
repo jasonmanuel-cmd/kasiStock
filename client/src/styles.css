@@ -492,6 +492,20 @@ button:focus-visible {
   margin-top: 4px;
 }
 
+.billing-card {
+  display: grid;
+  gap: 10px;
+}
+
+.billing-card strong {
+  font-size: 34px;
+}
+
+.billing-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .row.alert {
   grid-template-columns: auto minmax(0, 1fr) auto;
 }

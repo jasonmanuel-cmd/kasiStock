@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import {
   AlertTriangle,
   ClipboardCheck,
+  CreditCard,
   LayoutDashboard,
   LogOut,
   MessageCircle,
@@ -22,7 +23,8 @@ const tabs = [
   ["sales", "Sales", ShoppingBasket],
   ["suppliers", "Suppliers", Truck],
   ["compliance", "Compliance", ClipboardCheck],
-  ["orders", "Orders", MessageCircle]
+  ["orders", "Orders", MessageCircle],
+  ["billing", "Billing", CreditCard]
 ];
 
 const adminTab = ["admin", "Admin", Store];
@@ -116,7 +118,7 @@ function Login({ onAuth }) {
         </div>
       </section>
       <form className="auth-panel" onSubmit={submit}>
-        <p className="panel-note">{mode === "login" ? "Use the demo login or open your shop." : "Create a trial shop. First 30 days are free."}</p>
+        <p className="panel-note">{mode === "login" ? "Sign in to open your shop." : "Create a trial shop. First 30 days are free."}</p>
         <div className="switcher">
           <button type="button" className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>Sign in</button>
           <button type="button" className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>Create shop</button>
@@ -130,8 +132,8 @@ function Login({ onAuth }) {
             <label className="consent-row"><input name="termsAccepted" type="checkbox" required /> I agree to the Terms and Privacy Policy.</label>
           </>
         )}
-        <label>Email<input name="email" type="email" required defaultValue={mode === "login" ? "owner@spaza.local" : ""} /></label>
-        <label>Password<input name="password" type="password" required defaultValue={mode === "login" ? "spaza12345" : ""} /></label>
+        <label>Email<input name="email" type="email" required defaultValue={!import.meta.env.PROD && mode === "login" ? "owner@spaza.local" : ""} /></label>
+        <label>Password<input name="password" type="password" required defaultValue={!import.meta.env.PROD && mode === "login" ? "spaza12345" : ""} /></label>
         {error && <p className="form-error">{error}</p>}
         <button className="primary-btn" disabled={busy}>{busy ? "Working" : mode === "login" ? "Open Shop" : "Create Shop"}</button>
         <div className="legal-links">
@@ -182,8 +184,9 @@ function Shell({ user, onLogout }) {
     if (active === "sales") return <Sales {...props} />;
     if (active === "suppliers") return <Suppliers {...props} />;
     if (active === "compliance") return <Compliance {...props} />;
+    if (active === "billing") return <Billing user={user} />;
     return <Orders {...props} shopName={user.shopName} />;
-  }, [active, busy, data, error]);
+  }, [active, busy, data, error, user]);
 
   return (
     <div className="app-shell">
@@ -260,6 +263,30 @@ function Admin() {
         ))}
       </List>
     </Panel>
+  );
+}
+
+function Billing({ user }) {
+  const squareUrl = import.meta.env.VITE_SQUARE_PAYMENT_LINK_URL || "";
+  return (
+    <section className="content-grid">
+      <Panel title="Plan and Payment" eyebrow="Square checkout">
+        <div className="billing-card">
+          <strong>R99/month</strong>
+          <small>30-day free trial, then monthly access for one shop.</small>
+          <small>Status: {user.paymentStatus} · Plan: {user.planName}</small>
+          {squareUrl
+            ? <a className="primary-btn" href={squareUrl} target="_blank" rel="noreferrer"><CreditCard size={17} />Pay with Square</a>
+            : <button className="primary-btn" disabled><CreditCard size={17} />Square link not connected</button>}
+        </div>
+      </Panel>
+      <Panel title="After Payment" eyebrow="Admin step">
+        <List empty="No steps">
+          <Row title="Use the same email at checkout" note={user.email} badge="Required" />
+          <Row title="Confirm payment in Square" note="Then set this shop to paid in the master admin account." badge="Manual" />
+        </List>
+      </Panel>
+    </section>
   );
 }
 

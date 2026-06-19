@@ -21,6 +21,7 @@ For Vercel frontend, set:
 
 ```text
 VITE_API_BASE_URL=https://spaza-osserver-production.up.railway.app
+VITE_SQUARE_PAYMENT_LINK_URL=https://square.link/YOUR-LINK
 ```
 
 No separate frontend env is needed if the Express server serves `client/dist`.
@@ -83,15 +84,19 @@ Then test in browser:
 - Confirm stock deducts.
 - Generate WhatsApp order text.
 
-## Pilot Payment Path
+## Square Payment Path
 
-Manual first:
+Use Square hosted payment links first. It avoids storing card data in KasiStock.
 
-1. Shop finishes setup.
-2. Trial starts automatically.
-3. Before trial ends, ask for R99/month.
-4. Confirm payment manually.
-5. Mark the shop paid:
+1. In Square Dashboard, create a recurring payment link for `KasiStock Pro - R99/month`.
+2. Add a required custom field called `KasiStock account email`.
+3. Copy the payment link.
+4. In Vercel, set `VITE_SQUARE_PAYMENT_LINK_URL` to that link and redeploy.
+5. Customer signs up in KasiStock, then pays from the Billing tab.
+6. Confirm payment in Square.
+7. In the KasiStock admin tab, set the shop to `pro` and `paid`.
+
+CLI fallback:
 
 ```powershell
 npm run set-plan -w server -- owner@example.com pro paid
@@ -100,5 +105,5 @@ npm run set-plan -w server -- owner@example.com pro paid
 ## Delay
 
 - Do not migrate to Supabase until hosting/persistence requires it.
-- Do not add payment gateway until a user is ready to pay manually.
+- Do not add Square API/webhooks until manual Square confirmation becomes too slow.
 - Do not add WhatsApp API until users copy/send order text.

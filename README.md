@@ -15,6 +15,7 @@ Full-stack MVP for a South African spaza shop stock and sales book.
 - Supplier price comparison board
 - Compliance checklist for permits, food safety, pricing, and invoice traceability
 - WhatsApp order message generator and order history
+- Billing tab with Square hosted-payment-link checkout
 - Responsive React interface for desktop and mobile
 - API health and readiness endpoints
 - POPIA-style privacy and terms pages
@@ -97,6 +98,14 @@ npm audit --audit-level=moderate
 30 days free.
 Then R99/month.
 R299 once-off assisted setup.
+```
+
+Payment:
+
+```text
+Use Square Payment Links first.
+Set VITE_SQUARE_PAYMENT_LINK_URL in Vercel.
+Confirm payments in Square, then mark the shop paid from the admin tab.
 ```
 
 Track prospects in:
