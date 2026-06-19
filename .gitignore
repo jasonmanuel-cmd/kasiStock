@@ -8,3 +8,5 @@ server/data/*.sqlite-wal
 *.log
 .env
 .DS_Store
+
+.vercel
