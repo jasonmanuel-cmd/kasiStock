@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">KasiStock icon</title>
+  <desc id="desc">Green and gold shop awning with a stock check mark.</desc>
+  <rect width="512" height="512" rx="96" fill="#F6F2E7"/>
+  <rect x="134" y="214" width="244" height="190" rx="32" fill="#184434"/>
+  <path d="M112 154C112 131.909 129.909 114 152 114H360C382.091 114 400 131.909 400 154V222H112V154Z" fill="#C99A2F"/>
+  <path d="M112 222H400L370 286H142L112 222Z" fill="#DDB95B"/>
+  <path d="M152 114H360C382.091 114 400 131.909 400 154V168H112V154C112 131.909 129.909 114 152 114Z" fill="#184434"/>
+  <rect x="190" y="286" width="132" height="118" rx="18" fill="#FFFDF7"/>
+  <path d="M218 344L246 372L304 314" stroke="#184434" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

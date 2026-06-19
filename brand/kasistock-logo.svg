@@ -1,0 +1,17 @@
+<svg width="720" height="220" viewBox="0 0 720 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">KasiStock logo</title>
+  <desc id="desc">A simple green and gold shop mark with the word KasiStock and slogan Know your stock. Grow your shop.</desc>
+  <rect width="720" height="220" rx="28" fill="#F6F2E7"/>
+  <g transform="translate(44 42)">
+    <rect x="18" y="50" width="104" height="86" rx="14" fill="#184434"/>
+    <path d="M8 28C8 18.0589 16.0589 10 26 10H114C123.941 10 132 18.0589 132 28V56H8V28Z" fill="#C99A2F"/>
+    <path d="M8 56H132L119 84H21L8 56Z" fill="#DDB95B"/>
+    <path d="M26 10H114C123.941 10 132 18.0589 132 28V34H8V28C8 18.0589 16.0589 10 26 10Z" fill="#184434"/>
+    <rect x="42" y="82" width="56" height="54" rx="8" fill="#FFFDF7"/>
+    <path d="M54 108L66 120L90 94" stroke="#184434" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(204 58)">
+    <text x="0" y="56" fill="#17231D" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800" letter-spacing="0">Kasi<tspan fill="#184434">Stock</tspan></text>
+    <text x="3" y="94" fill="#667269" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="0">Know your stock. Grow your shop.</text>
+  </g>
+</svg>

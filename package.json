@@ -1,0 +1,22 @@
+{
+  "name": "spaza-shop-os-full",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run check -w server",
+    "start": "npm run start -w server",
+    "serve": "npm run build && npm run start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}
