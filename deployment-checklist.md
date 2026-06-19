@@ -60,6 +60,14 @@ Client:     https://spaza-osclient-production.up.railway.app
 
 Both currently return `200`; server `/api/auth/login` works with the demo account.
 
+CORS:
+
+`CLIENT_ORIGIN` can be one origin or a comma-separated list:
+
+```text
+CLIENT_ORIGIN=https://kasistock.vercel.app,https://spaza-osclient-production.up.railway.app
+```
+
 ## Smoke Test
 
 ```powershell

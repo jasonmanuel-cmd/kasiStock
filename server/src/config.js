@@ -12,6 +12,10 @@ function env(name, fallback) {
 export const config = {
   port: Number(process.env.PORT || 4100),
   clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  clientOrigins: (process.env.CLIENT_ORIGIN || "http://localhost:5173,https://kasistock.vercel.app,https://spaza-osclient-production.up.railway.app")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   jwtSecret: env("JWT_SECRET", "dev-only-spaza-access-secret-change-me"),
   refreshSecret: env("REFRESH_SECRET", "dev-only-spaza-refresh-secret-change-me"),
   databasePath: path.resolve(root, process.env.DATABASE_PATH || "./data/spaza-os.sqlite")
