@@ -105,6 +105,8 @@ Payment:
 ```text
 Use Square Payment Links first.
 Set VITE_SQUARE_PAYMENT_LINK_URL in Vercel.
+Monthly link: https://square.link/u/dqL35u4R
+Assisted setup link: https://square.link/u/KzY6ujvy
 Confirm payments in Square, then mark the shop paid from the admin tab.
 ```
 

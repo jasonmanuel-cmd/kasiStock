@@ -21,7 +21,8 @@ For Vercel frontend, set:
 
 ```text
 VITE_API_BASE_URL=https://spaza-osserver-production.up.railway.app
-VITE_SQUARE_PAYMENT_LINK_URL=https://square.link/YOUR-LINK
+VITE_SQUARE_PAYMENT_LINK_URL=https://square.link/u/dqL35u4R
+VITE_SQUARE_SETUP_LINK_URL=https://square.link/u/KzY6ujvy
 ```
 
 No separate frontend env is needed if the Express server serves `client/dist`.
@@ -95,6 +96,13 @@ Use Square hosted payment links first. It avoids storing card data in KasiStock.
 5. Customer signs up in KasiStock, then pays from the Billing tab.
 6. Confirm payment in Square.
 7. In the KasiStock admin tab, set the shop to `pro` and `paid`.
+
+Current links:
+
+```text
+Monthly: https://square.link/u/dqL35u4R
+Assisted setup: https://square.link/u/KzY6ujvy
+```
 
 CLI fallback:
 

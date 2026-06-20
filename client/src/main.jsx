@@ -267,7 +267,8 @@ function Admin() {
 }
 
 function Billing({ user }) {
-  const squareUrl = import.meta.env.VITE_SQUARE_PAYMENT_LINK_URL || "";
+  const squareUrl = import.meta.env.VITE_SQUARE_PAYMENT_LINK_URL || "https://square.link/u/dqL35u4R";
+  const setupUrl = import.meta.env.VITE_SQUARE_SETUP_LINK_URL || "https://square.link/u/KzY6ujvy";
   return (
     <section className="content-grid">
       <Panel title="Plan and Payment" eyebrow="Square checkout">
@@ -278,6 +279,7 @@ function Billing({ user }) {
           {squareUrl
             ? <a className="primary-btn" href={squareUrl} target="_blank" rel="noreferrer"><CreditCard size={17} />Pay with Square</a>
             : <button className="primary-btn" disabled><CreditCard size={17} />Square link not connected</button>}
+          <a className="secondary-btn" href={setupUrl} target="_blank" rel="noreferrer"><CreditCard size={17} />Pay assisted setup</a>
         </div>
       </Panel>
       <Panel title="After Payment" eyebrow="Admin step">
